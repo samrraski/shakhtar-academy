@@ -156,6 +156,53 @@ create policy "Staff can read inquiries"
   on public.inquiries for select
   using (auth.role() = 'authenticated');
 
+-- ── Admin helper function ─────────────────────────────────
+create or replace function public.is_admin()
+returns boolean language sql security definer set search_path = public as $$
+  select exists (
+    select 1 from public.profiles where id = auth.uid() and role = 'admin'
+  );
+$$;
+
+-- ── Admin policies ─────────────────────────────────────────
+-- Admins can read ALL profiles (for the admin panel user list)
+create policy "Admins can read all profiles"
+  on public.profiles for select
+  using (public.is_admin());
+
+create policy "Admins can update all profiles"
+  on public.profiles for update
+  using (public.is_admin());
+
+-- Admins can read all players
+create policy "Admins can read all players"
+  on public.players for select
+  using (public.is_admin());
+
+-- Admins can manage all registrations
+create policy "Admins can manage all registrations"
+  on public.registrations for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- Admins can manage programs (add/edit/disable)
+create policy "Admins can manage programs"
+  on public.programs for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- Admins can manage events
+create policy "Admins can manage events"
+  on public.events for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- Admins can manage inquiries (mark contacted, close)
+create policy "Admins can manage inquiries"
+  on public.inquiries for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
 -- ============================================================
 -- Sample data — the 4 launch programs
 -- Safe to re-run: skips rows that already exist by name

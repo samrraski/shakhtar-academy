@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Phone, Menu, X } from "lucide-react";
+import { Phone, Menu, X } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
 const NAV_LINKS = [
@@ -17,20 +18,35 @@ const NAV_LINKS = [
 export default function PublicNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [promoDismissed, setPromoDismissed] = useState(false);
 
   return (
     <header className="bg-brand-black border-b border-brand-gray-800 sticky top-0 z-50">
+      {/* Promo bar */}
+      {!promoDismissed && (
+        <div className="bg-brand-orange text-white text-center py-2 px-4 text-sm font-bold relative">
+          <span className="font-display uppercase tracking-wide">
+            🎒 Back to School, Back to Football — <span className="underline underline-offset-2">Fall 2026 registration</span> is open!
+          </span>
+          <Link href="/sign-up" className="ml-3 inline-block bg-white text-brand-orange font-black text-xs uppercase tracking-widest px-3 py-1 rounded-full hover:bg-brand-orange-light transition-colors">
+            Register Now
+          </Link>
+          <button onClick={() => setPromoDismissed(true)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors text-lg leading-none">
+            ×
+          </button>
+        </div>
+      )}
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-28">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 bg-brand-orange rounded-md flex items-center justify-center">
-              <Shield size={14} className="text-brand-black" strokeWidth={2.5} />
+          <Link href="/" className="flex items-center gap-3 shrink-0">
+            <Image src="/brand/shakhtar-crest.png" alt="" width={207} height={321} className="h-24 w-auto" />
+            <div className="flex flex-col leading-none">
+              <span className="text-white font-black text-lg tracking-tight uppercase">Shakhtar</span>
+              <span className="text-white font-bold text-base tracking-tight uppercase">Academy</span>
+              <span className="text-brand-orange font-semibold text-sm italic">Calgary</span>
             </div>
-            <span className="text-white font-bold text-base tracking-tight">
-              Shakhtar <span className="text-brand-orange">Academy</span>
-            </span>
           </Link>
 
           {/* Desktop nav */}

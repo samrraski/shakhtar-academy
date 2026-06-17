@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Shield, Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
 export default function PublicFooter() {
@@ -10,9 +11,7 @@ export default function PublicFooter() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 bg-brand-orange rounded-md flex items-center justify-center">
-                <Shield size={14} className="text-brand-black" strokeWidth={2.5} />
-              </div>
+              <Image src="/brand/shakhtar-crest.png" alt="" width={207} height={321} className="h-8 w-auto" />
               <span className="text-white font-bold text-base">Shakhtar <span className="text-brand-orange">Academy</span></span>
             </div>
             <p className="text-brand-gray-600 text-sm leading-relaxed">

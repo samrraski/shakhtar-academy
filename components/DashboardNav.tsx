@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -10,7 +11,6 @@ import {
   Calendar,
   Settings,
   LogOut,
-  Shield,
 } from "lucide-react";
 
 const navLinks = [
@@ -37,9 +37,7 @@ export default function DashboardNav({ userName }: { userName?: string }) {
         <div className="flex items-center h-14 gap-6">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 bg-brand-orange rounded-md flex items-center justify-center">
-              <Shield size={14} className="text-brand-black" strokeWidth={2.5} />
-            </div>
+            <Image src="/brand/shakhtar-crest.png" alt="" width={207} height={321} className="h-8 w-auto" />
             <span className="text-white font-bold text-base tracking-tight">
               Shakhtar <span className="text-brand-orange">Academy</span>
             </span>

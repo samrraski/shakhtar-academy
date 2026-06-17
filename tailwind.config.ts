@@ -10,9 +10,9 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          orange: "#F36C21",
-          "orange-hover": "#D85A12",
-          "orange-light": "#FDEDE1",
+          orange: "#FF6400",
+          "orange-hover": "#E55A00",
+          "orange-light": "#FFF0E6",
           black: "#2C2C2C",
           "gray-900": "#1A1A1A",
           "gray-800": "#2C2C2C",
@@ -20,10 +20,13 @@ const config: Config = {
           "gray-400": "#9A9A9A",
           "gray-200": "#E2E2E2",
           "gray-100": "#F6F6F6",
+          cream: "#F5F0E9",
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["Nunito Sans", "system-ui", "sans-serif"],
+        display: ["Jost", "system-ui", "sans-serif"],
+        serif: ["Jost", "system-ui", "sans-serif"],
       },
     },
   },

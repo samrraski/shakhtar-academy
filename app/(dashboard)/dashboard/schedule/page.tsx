@@ -97,7 +97,7 @@ export default async function DashboardSchedulePage() {
 
       {activePrograms.length === 0 ? (
         <div className="bg-white rounded-2xl border border-brand-gray-200 py-16 text-center px-6">
-          <Calendar size={32} className="mx-auto text-brand-gray-300 mb-3" />
+          <Calendar size={32} className="mx-auto text-brand-gray-200 mb-3" />
           <p className="text-brand-gray-400 text-sm max-w-sm mx-auto">
             Your personalized schedule shows up here once you have an{" "}
             <span className="font-medium text-brand-black">active</span> program registration.

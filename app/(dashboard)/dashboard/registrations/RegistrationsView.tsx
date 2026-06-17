@@ -131,7 +131,7 @@ export default function RegistrationsView({
       <div className="bg-white rounded-2xl border border-brand-gray-200 overflow-hidden">
         {registrations.length === 0 ? (
           <div className="py-16 text-center">
-            <ClipboardList size={32} className="mx-auto text-brand-gray-300 mb-3" />
+            <ClipboardList size={32} className="mx-auto text-brand-gray-200 mb-3" />
             <p className="text-brand-gray-400 text-sm">No registrations yet.</p>
           </div>
         ) : (

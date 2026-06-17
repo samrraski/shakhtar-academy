@@ -1,9 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import PublicNav from "@/components/PublicNav";
 import PublicFooter from "@/components/PublicFooter";
 import {
   ArrowRight, Target, Users, Trophy, ShieldCheck,
-  Calendar, Star, CheckCircle2,
+  Calendar, CheckCircle2,
 } from "lucide-react";
 
 const VALUE_PROPS = [
@@ -19,12 +20,6 @@ const PROGRAMS_PREVIEW = [
   { age: "U17+",      name: "Pre-Academy",         desc: "Preparing top players for the next level." },
 ];
 
-const STATS = [
-  { value: "10+",  label: "Years Coaching Calgary Youth" },
-  { value: "500+", label: "Players Developed" },
-  { value: "20+",  label: "Licensed Coaches & Staff" },
-  { value: "6–18", label: "Age Groups Served" },
-];
 
 export default function HomePage() {
   return (
@@ -32,37 +27,50 @@ export default function HomePage() {
       <PublicNav />
 
       {/* Hero */}
-      <section className="relative bg-brand-black overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-black via-brand-black to-brand-orange/20" />
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-28 text-center">
-          <div className="inline-flex items-center gap-2 bg-brand-gray-800 border border-brand-gray-800 rounded-full px-4 py-1.5 mb-6">
-            <Star size={13} className="text-brand-orange" />
-            <span className="text-xs font-medium text-brand-gray-200">Now registering for the upcoming season</span>
-          </div>
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
-            Shakhtar Academy <span className="text-brand-orange">Calgary</span>
+      <section className="relative bg-brand-black">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-black via-brand-black to-brand-orange/10" />
+          <Image
+            src="/brand/halftone-wave-wide.png"
+            alt=""
+            width={2782}
+            height={1440}
+            className="pointer-events-none select-none absolute -right-24 -top-16 w-[640px] max-w-none opacity-50 mix-blend-screen sm:opacity-70"
+          />
+        </div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-28 sm:pb-36">
+          <p className="font-display text-xs sm:text-sm uppercase tracking-[0.25em] text-brand-orange font-medium">
+            Official Shakhtar Academy — Season 2026/27
+          </p>
+          <h1 className="mt-3 font-display uppercase text-4xl sm:text-6xl font-bold text-white tracking-tight leading-[1.05] max-w-3xl">
+            The Shakhtar way of player development, in Calgary
           </h1>
-          <p className="mt-5 text-lg text-brand-gray-200 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-brand-gray-200 max-w-2xl leading-relaxed">
             {`Calgary's home for elite youth soccer development. Structured programs for ages 6–18, led by licensed coaches who care about every player's growth — on and off the pitch.`}
           </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="mt-9 flex flex-col sm:flex-row gap-3">
             <Link href="/programs"
-              className="inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-6 py-3 rounded-xl text-sm transition-colors w-full sm:w-auto">
+              className="inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-7 py-3.5 rounded-full text-sm uppercase tracking-wide transition-colors shadow-[0_0_0_1px_rgba(255,100,0,0.4),0_8px_30px_-6px_rgba(255,100,0,0.7)] w-full sm:w-auto">
               Explore Programs <ArrowRight size={16} />
             </Link>
             <Link href="/sign-up"
-              className="inline-flex items-center justify-center gap-2 bg-white hover:bg-brand-gray-100 text-brand-black font-bold px-6 py-3 rounded-xl text-sm transition-colors w-full sm:w-auto">
+              className="inline-flex items-center justify-center gap-2 border border-white/30 hover:border-white text-white font-bold px-7 py-3.5 rounded-full text-sm uppercase tracking-wide transition-colors w-full sm:w-auto">
               Register Today
             </Link>
           </div>
+          <p className="mt-10 font-display text-xl sm:text-2xl font-black uppercase tracking-[0.2em] text-white/20">
+            WE ARE UNBREAKABLE
+          </p>
         </div>
+
       </section>
 
       {/* Mission snapshot */}
-      <section className="py-16 sm:py-20">
+      <section className="pt-16 sm:pt-20 pb-16 sm:pb-20 bg-brand-cream">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-3xl font-bold text-brand-black tracking-tight">Built to develop complete players</h2>
+            <p className="font-display text-xs uppercase tracking-[0.25em] text-brand-orange font-medium">Our Approach</p>
+            <h2 className="mt-2 font-display uppercase text-3xl sm:text-4xl font-bold text-brand-black tracking-tight">Built to develop complete players</h2>
             <p className="mt-3 text-brand-gray-600 leading-relaxed">
               Our programs combine technical training, tactical education, and character development —
               giving every player the tools to succeed on the pitch and beyond.
@@ -70,7 +78,7 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {VALUE_PROPS.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="bg-brand-gray-100 rounded-2xl p-6 border border-brand-gray-200">
+              <div key={title} className="bg-white rounded-2xl p-6 border border-brand-gray-200">
                 <div className="w-11 h-11 bg-brand-orange/10 rounded-xl flex items-center justify-center mb-4">
                   <Icon size={20} className="text-brand-orange" />
                 </div>
@@ -83,56 +91,51 @@ export default function HomePage() {
       </section>
 
       {/* Programs preview */}
-      <section className="py-16 sm:py-20 bg-brand-gray-100 border-y border-brand-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <section className="py-16 sm:py-20 bg-brand-black relative overflow-hidden">
+        <Image
+          src="/brand/halftone-wave-compact.png"
+          alt=""
+          width={3288}
+          height={1314}
+          className="pointer-events-none select-none absolute -left-32 bottom-0 w-[560px] max-w-none opacity-25 mix-blend-screen"
+        />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-brand-black tracking-tight">Programs for every age</h2>
-              <p className="mt-2 text-brand-gray-600">From first touches to competitive pathways.</p>
+              <p className="font-display text-xs uppercase tracking-[0.25em] text-brand-orange font-medium">Programs</p>
+              <h2 className="mt-2 font-display uppercase text-3xl sm:text-4xl font-bold text-white tracking-tight">A pathway for every age</h2>
+              <p className="mt-2 text-brand-gray-400">From first touches to competitive pathways.</p>
             </div>
-            <Link href="/programs" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-orange hover:text-brand-orange-hover transition-colors">
+            <Link href="/programs" className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-orange hover:text-white transition-colors">
               View all programs <ArrowRight size={14} />
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {PROGRAMS_PREVIEW.map((p) => (
               <Link key={p.name} href="/programs"
-                className="bg-white rounded-2xl border border-brand-gray-200 p-6 hover:border-brand-orange transition-colors group">
-                <span className="inline-block text-xs font-bold text-brand-orange bg-brand-orange-light px-2.5 py-1 rounded-full mb-4">
+                className="bg-brand-gray-900 rounded-2xl border border-white/10 p-6 hover:border-brand-orange transition-colors group">
+                <span className="inline-block text-xs font-bold text-brand-orange bg-brand-orange/10 px-2.5 py-1 rounded-full mb-4">
                   {p.age}
                 </span>
-                <h3 className="font-semibold text-brand-black mb-1.5 group-hover:text-brand-orange transition-colors">{p.name}</h3>
-                <p className="text-sm text-brand-gray-600 leading-relaxed">{p.desc}</p>
+                <h3 className="font-semibold text-white mb-1.5 group-hover:text-brand-orange transition-colors">{p.name}</h3>
+                <p className="text-sm text-brand-gray-400 leading-relaxed">{p.desc}</p>
               </Link>
             ))}
           </div>
           <div className="mt-8 text-center sm:hidden">
-            <Link href="/programs" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-orange hover:text-brand-orange-hover transition-colors">
+            <Link href="/programs" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-orange hover:text-white transition-colors">
               View all programs <ArrowRight size={14} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Stats band */}
-      <section className="py-16 bg-brand-black">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            {STATS.map((s) => (
-              <div key={s.label}>
-                <p className="text-4xl font-extrabold text-brand-orange">{s.value}</p>
-                <p className="mt-1.5 text-sm text-brand-gray-400">{s.label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* What to expect */}
-      <section className="py-16 sm:py-20">
+      <section className="py-16 sm:py-20 bg-brand-cream">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-brand-black tracking-tight mb-4">What every player gets</h2>
+            <p className="font-display text-xs uppercase tracking-[0.25em] text-brand-orange font-medium">What To Expect</p>
+            <h2 className="mt-2 font-display uppercase text-3xl sm:text-4xl font-bold text-brand-black tracking-tight mb-4">What every player gets</h2>
             <ul className="space-y-3">
               {[
                 "A structured curriculum built around age and ability",
@@ -148,7 +151,8 @@ export default function HomePage() {
               ))}
             </ul>
           </div>
-          <div className="bg-brand-gray-100 rounded-2xl border border-brand-gray-200 p-8">
+          <div className="relative bg-white rounded-2xl border-l-4 border-brand-orange shadow-sm p-8">
+            <span className="absolute -top-5 left-8 text-6xl text-brand-orange/30 font-serif italic select-none">&ldquo;</span>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-brand-orange/10 rounded-xl flex items-center justify-center">
                 <Trophy size={18} className="text-brand-orange" />
@@ -161,11 +165,11 @@ export default function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link href="/schedule"
-                className="inline-flex items-center justify-center gap-2 bg-white border border-brand-gray-200 hover:border-brand-orange text-brand-black font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+                className="inline-flex items-center justify-center gap-2 bg-brand-cream border border-brand-gray-200 hover:border-brand-orange text-brand-black font-semibold px-5 py-2.5 rounded-full text-sm transition-colors">
                 <Calendar size={15} /> View Schedule
               </Link>
               <Link href="/sign-up"
-                className="inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors">
+                className="inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-5 py-2.5 rounded-full text-sm transition-colors">
                 Create Account <ArrowRight size={15} />
               </Link>
             </div>
@@ -173,15 +177,31 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* WE ARE UNBREAKABLE banner */}
+      <section className="py-12 sm:py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="relative overflow-hidden bg-brand-orange rounded-2xl px-8 sm:px-12 py-10 sm:py-12 flex items-center">
+            <Image
+              src="/brand/we-are-unbreakable.png"
+              alt="We Are Unbreakable"
+              width={3420}
+              height={531}
+              className="w-full max-w-xl h-auto"
+            />
+          </div>
+        </div>
+      </section>
+
       {/* CTA banner */}
-      <section className="py-16 bg-brand-orange">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl font-bold text-white tracking-tight">Ready to join the academy?</h2>
-          <p className="mt-3 text-white/90 max-w-xl mx-auto">
+      <section className="py-16 sm:py-20 bg-brand-black text-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <p className="font-display text-xs uppercase tracking-[0.25em] text-brand-orange font-medium">Join The Academy</p>
+          <h2 className="mt-2 font-display uppercase text-3xl sm:text-4xl font-bold text-white tracking-tight">Ready to join the academy?</h2>
+          <p className="mt-3 text-brand-gray-400 max-w-xl mx-auto">
             Spots fill quickly each season. Create a free account to register your player and lock in their spot.
           </p>
           <Link href="/sign-up"
-            className="mt-7 inline-flex items-center gap-2 bg-brand-black hover:bg-brand-gray-900 text-white font-bold px-7 py-3 rounded-xl text-sm transition-colors">
+            className="mt-7 inline-flex items-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-8 py-3.5 rounded-full text-sm uppercase tracking-wide transition-colors shadow-[0_0_0_1px_rgba(243,108,33,0.4),0_8px_30px_-6px_rgba(243,108,33,0.7)]">
             Register Today <ArrowRight size={16} />
           </Link>
         </div>

@@ -113,7 +113,7 @@ export default function PlayersView({ initialPlayers }: { initialPlayers: Player
       <div className="bg-white rounded-2xl border border-brand-gray-200 overflow-hidden">
         {players.length === 0 ? (
           <div className="py-16 text-center">
-            <User size={32} className="mx-auto text-brand-gray-300 mb-3" />
+            <User size={32} className="mx-auto text-brand-gray-200 mb-3" />
             <p className="text-brand-gray-400 text-sm">No players yet. Add your first one to get started!</p>
           </div>
         ) : (
