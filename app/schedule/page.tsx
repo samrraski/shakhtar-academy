@@ -1,9 +1,38 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import Image from "next/image";
 import PublicNav from "@/components/PublicNav";
 import PublicFooter from "@/components/PublicFooter";
-import { ArrowRight, Calendar, MapPin, Trophy } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Trophy, Clock } from "lucide-react";
+
+export const dynamic = "force-dynamic";
+
+const DASHBOARD_API = process.env.DASHBOARD_API_URL || "http://localhost:3000";
+
+interface LiveSession {
+  id: string;
+  session_date: string;
+  time_start: string;
+  time_end: string;
+  address: string | null;
+  google_maps_url: string | null;
+  program_name: string | null;
+  age_min: number | null;
+  age_max: number | null;
+  trainer_name: string | null;
+}
+
+function fmtDate(d: string) {
+  const [y, m, day] = d.split("-").map(Number);
+  return new Date(y, m - 1, day).toLocaleDateString("en-CA", {
+    weekday: "short", month: "short", day: "numeric",
+  });
+}
+
+function fmtTime(t: string) {
+  const [h, mi] = t.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  return `${h % 12 || 12}:${String(mi).padStart(2, "0")} ${ampm}`;
+}
 
 export const metadata: Metadata = {
   title: "Training Schedule",
@@ -18,14 +47,15 @@ const WEEKLY_SCHEDULE = [
   { program: "Pre-Academy",       age: "U17+",      days: "Mon, Tue & Thu",   time: "7:00 – 8:30 PM", location: "Field House & Turf 2" },
 ];
 
-const UPCOMING_EVENTS = [
-  { type: "Tournament", title: "Fall Jamboree (U6 – U12)",          date: "Sat, Sep 13",  location: "Shakhtar Academy Field House" },
-  { type: "Game",       title: "Elite Pathway vs. Calgary United",  date: "Sun, Sep 21",  location: "Turf 2" },
-  { type: "Evaluation", title: "Mid-Season Player Evaluations",     date: "Sat, Oct 18",  location: "Field House" },
-  { type: "Tournament", title: "Pre-Academy Showcase Weekend",      date: "Oct 24 – 26",  location: "Calgary Soccer Centre" },
-];
+export default async function SchedulePage() {
+  let sessions: LiveSession[] = [];
+  try {
+    const res = await fetch(`${DASHBOARD_API}/api/v1/public/sessions?days=60`, {
+      next: { revalidate: 300 },
+    });
+    if (res.ok) sessions = await res.json();
+  } catch { /* offline — show static schedule only */ }
 
-export default function SchedulePage() {
   return (
     <div className="min-h-screen bg-white">
       <PublicNav />
@@ -93,34 +123,87 @@ export default function SchedulePage() {
         </div>
       </section>
 
-      {/* Upcoming events */}
+      {/* Upcoming sessions — live from dashboard */}
       <section className="py-16 sm:py-24 bg-brand-cream">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="flex items-center gap-2.5 mb-6">
             <Trophy size={18} className="text-brand-orange" />
-            <h2 className="font-display uppercase text-2xl font-bold text-brand-black tracking-tight">Upcoming games &amp; events</h2>
+            <h2 className="font-display uppercase text-2xl font-bold text-brand-black tracking-tight">
+              Upcoming training sessions
+            </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {UPCOMING_EVENTS.map((e) => (
-              <div key={e.title} className="bg-white rounded-2xl border border-brand-gray-200 p-5 flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-brand-orange/10 flex flex-col items-center justify-center shrink-0">
-                  <Calendar size={18} className="text-brand-orange" />
-                </div>
-                <div className="min-w-0">
-                  <span className="inline-block text-xs font-bold text-brand-orange bg-brand-orange-light px-2 py-0.5 rounded-full mb-1.5">
-                    {e.type}
-                  </span>
-                  <p className="text-sm font-semibold text-brand-black">{e.title}</p>
-                  <div className="flex flex-wrap items-center gap-3 mt-1">
-                    <span className="text-xs text-brand-gray-600">{e.date}</span>
-                    <span className="flex items-center gap-1 text-xs text-brand-gray-600">
-                      <MapPin size={11} className="text-brand-gray-400" /> {e.location}
+
+          {sessions.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-brand-gray-200 p-8 text-center">
+              <Calendar size={32} className="text-brand-gray-300 mx-auto mb-3" />
+              <p className="text-sm text-brand-gray-600 font-medium">No sessions scheduled yet.</p>
+              <p className="text-xs text-brand-gray-400 mt-1">
+                Check back soon — our staff publishes upcoming sessions regularly.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {sessions.map((s) => (
+                <div key={s.id} className="bg-white rounded-2xl border border-brand-gray-200 p-5 flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-brand-orange/10 flex flex-col items-center justify-center shrink-0 text-center">
+                    <span className="text-[10px] font-bold text-brand-orange uppercase leading-none">
+                      {new Date(s.session_date + "T00:00:00").toLocaleDateString("en-CA", { month: "short" })}
+                    </span>
+                    <span className="text-xl font-black text-brand-orange leading-none mt-0.5">
+                      {new Date(s.session_date + "T00:00:00").getDate()}
                     </span>
                   </div>
+                  <div className="min-w-0 flex-1">
+                    {s.program_name && (
+                      <span className="inline-block text-xs font-bold text-brand-orange bg-brand-orange-light px-2 py-0.5 rounded-full mb-1.5">
+                        {s.program_name}
+                        {s.age_min != null && s.age_max != null && ` · U${s.age_min}–U${s.age_max}`}
+                      </span>
+                    )}
+                    <p className="text-sm font-semibold text-brand-black">
+                      {fmtDate(s.session_date)}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-3 mt-1">
+                      <span className="flex items-center gap-1 text-xs text-brand-gray-600">
+                        <Clock size={11} className="text-brand-gray-400" />
+                        {fmtTime(s.time_start)} – {fmtTime(s.time_end)}
+                      </span>
+                      {s.address && (
+                        s.google_maps_url ? (
+                          <a
+                            href={s.google_maps_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-xs text-brand-orange hover:underline"
+                          >
+                            <MapPin size={11} /> {s.address}
+                          </a>
+                        ) : (
+                          <span className="flex items-center gap-1 text-xs text-brand-gray-600">
+                            <MapPin size={11} className="text-brand-gray-400" /> {s.address}
+                          </span>
+                        )
+                      )}
+                    </div>
+                    {s.trainer_name && (
+                      <p className="text-xs text-brand-gray-400 mt-1">Coach: {s.trainer_name}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
+          <p className="mt-5 text-xs text-brand-gray-400">
+            Registered families see their full schedule and get session reminders in the{" "}
+            <a
+              href={process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174"}
+              className="text-brand-orange hover:underline font-medium"
+            >
+              parent portal
+            </a>
+            .
+          </p>
         </div>
       </section>
 
@@ -141,10 +224,12 @@ export default function SchedulePage() {
           <p className="mt-3 text-brand-gray-200 max-w-xl mx-auto leading-relaxed">
             {`Create a free parent account to register your player and see their program's schedule, upcoming games, and registration status all in one place.`}
           </p>
-          <Link href="/sign-up"
-            className="mt-7 inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-7 py-3.5 rounded-full text-sm uppercase tracking-wide transition-colors shadow-[0_0_0_1px_rgba(243,108,33,0.4),0_8px_30px_-6px_rgba(243,108,33,0.7)]">
-            Create Your Account <ArrowRight size={16} />
-          </Link>
+          <a
+            href={`${process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174"}/login`}
+            className="mt-7 inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-7 py-3.5 rounded-full text-sm uppercase tracking-wide transition-colors shadow-[0_0_0_1px_rgba(243,108,33,0.4),0_8px_30px_-6px_rgba(243,108,33,0.7)]"
+          >
+            Go to Parent Portal <ArrowRight size={16} />
+          </a>
         </div>
       </section>
 

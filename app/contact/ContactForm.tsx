@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 const PROGRAMS = [
@@ -13,6 +12,8 @@ const PROGRAMS = [
 ];
 
 const EMPTY_FORM = { name: "", email: "", phone: "", program_interest: "", message: "" };
+
+const API_URL = process.env.NEXT_PUBLIC_DASHBOARD_API_URL || "http://localhost:3000";
 
 export default function ContactForm() {
   const [form, setForm] = useState(EMPTY_FORM);
@@ -29,23 +30,34 @@ export default function ContactForm() {
     setLoading(true);
     setError("");
 
-    const supabase = createClient();
-    const { error: err } = await supabase.from("inquiries").insert({
-      name: form.name.trim(),
-      email: form.email.trim(),
-      phone: form.phone || null,
-      program_interest: form.program_interest || null,
-      message: form.message.trim(),
-    });
+    // Build message — include program interest if selected
+    const fullMessage = form.program_interest
+      ? `Program of interest: ${form.program_interest}\n\n${form.message}`
+      : form.message;
 
-    if (err) {
-      setError(err.message);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/inquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contact_name:  form.name.trim(),
+          contact_email: form.email.trim() || undefined,
+          contact_phone: form.phone.trim() || undefined,
+          message:       fullMessage.trim(),
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error((body as { error?: string }).error || `Error ${res.status}`);
+      }
+
+      setSent(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to send. Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setSent(true);
-    setLoading(false);
   }
 
   if (sent) {
@@ -92,7 +104,9 @@ export default function ContactForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-brand-black mb-1.5">Phone <span className="text-brand-gray-400 font-normal">(optional)</span></label>
+          <label className="block text-sm font-medium text-brand-black mb-1.5">
+            Phone <span className="text-brand-gray-400 font-normal">(optional)</span>
+          </label>
           <input
             type="tel"
             value={form.phone}

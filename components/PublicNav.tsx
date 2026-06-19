@@ -4,15 +4,17 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, Menu, X } from "lucide-react";
+import { Phone, Menu, X, LogIn } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
+const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174";
+
 const NAV_LINKS = [
-  { href: "/about", label: "About" },
+  { href: "/about",    label: "About" },
   { href: "/programs", label: "Programs" },
-  { href: "/coaches", label: "Coaches" },
+  { href: "/coaches",  label: "Coaches" },
   { href: "/schedule", label: "Schedule" },
-  { href: "/contact", label: "Contact" },
+  { href: "/contact",  label: "Contact" },
 ];
 
 export default function PublicNav() {
@@ -28,8 +30,8 @@ export default function PublicNav() {
           <span className="font-display uppercase tracking-wide">
             🎒 Back to School, Back to Football — <span className="underline underline-offset-2">Fall 2026 registration</span> is open!
           </span>
-          <Link href="/sign-up" className="ml-3 inline-block bg-white text-brand-orange font-black text-xs uppercase tracking-widest px-3 py-1 rounded-full hover:bg-brand-orange-light transition-colors">
-            Register Now
+          <Link href="/contact" className="ml-3 inline-block bg-white text-brand-orange font-black text-xs uppercase tracking-widest px-3 py-1 rounded-full hover:bg-brand-orange-light transition-colors">
+            Get In Touch
           </Link>
           <button onClick={() => setPromoDismissed(true)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors text-lg leading-none">
             ×
@@ -74,12 +76,17 @@ export default function PublicNav() {
             <a href={`tel:${ACADEMY.phone}`} className="hidden lg:flex items-center gap-1.5 text-brand-gray-400 hover:text-white text-sm transition-colors">
               <Phone size={13} />{ACADEMY.phone}
             </a>
-            <Link href="/sign-in"
-              className="hidden sm:block text-brand-gray-400 hover:text-white text-sm font-medium px-3 py-1.5 transition-colors">
-              Sign In
-            </Link>
-            <Link href="/sign-up"
-              className="hidden sm:block bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-sm px-4 py-1.5 rounded-lg transition-colors">
+            <a
+              href={`${PORTAL_URL}/login`}
+              className="hidden sm:flex items-center gap-1.5 text-brand-gray-400 hover:text-white text-sm font-medium px-3 py-1.5 transition-colors"
+            >
+              <LogIn size={14} />
+              Parent Portal
+            </a>
+            <Link
+              href="/contact"
+              className="hidden sm:block bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-sm px-4 py-1.5 rounded-lg transition-colors"
+            >
               Register
             </Link>
             {/* Mobile hamburger */}
@@ -100,12 +107,15 @@ export default function PublicNav() {
               {l.label}
             </Link>
           ))}
-          <Link href="/sign-in" onClick={() => setMobileOpen(false)}
-            className="block px-3 py-2.5 text-sm font-medium text-brand-gray-400 hover:text-white transition-colors">
-            Sign In
-          </Link>
+          <a
+            href={`${PORTAL_URL}/login`}
+            onClick={() => setMobileOpen(false)}
+            className="block px-3 py-2.5 text-sm font-medium text-brand-gray-400 hover:text-white transition-colors"
+          >
+            Parent Portal
+          </a>
           <div className="pt-2">
-            <Link href="/sign-up" onClick={() => setMobileOpen(false)}
+            <Link href="/contact" onClick={() => setMobileOpen(false)}
               className="block w-full text-center bg-brand-orange text-white font-bold text-sm px-4 py-2.5 rounded-lg">
               Register Today
             </Link>

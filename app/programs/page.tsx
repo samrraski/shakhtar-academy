@@ -4,11 +4,11 @@ import Image from "next/image";
 import PublicNav from "@/components/PublicNav";
 import PublicFooter from "@/components/PublicFooter";
 import { ArrowRight, Clock, MapPin, CheckCircle2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
 
-// Always fetch fresh from Supabase — never use Next.js data cache
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const DASHBOARD_API = process.env.DASHBOARD_API_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   title: "Programs",
@@ -58,24 +58,42 @@ const FALLBACK = [
   { name: "Pre-Academy",       age_group: "U17+",      price: 259, schedule_summary: "Mon, Tue & Thu · 7:00–8:30 PM · Field House & Turf 2", description: "The final step before senior and post-secondary soccer — elite-level training and exposure to scouts.", is_active: true },
 ];
 
-interface DBProgram {
-  id: string; name: string; age_group: string | null;
+interface DashboardProgram {
+  id: string; name: string; age_min: number; age_max: number;
+  price_cad: number; schedule_days: string[]; is_active: boolean;
+}
+
+// Normalised shape shared with the fallback
+interface Program {
+  id: string; name: string; age_group: string;
   description: string | null; price: number | null;
   schedule_summary: string | null; is_active: boolean;
 }
 
+function adapt(p: DashboardProgram): Program {
+  return {
+    id: p.id,
+    name: p.name,
+    age_group: `U${p.age_min} – U${p.age_max}`,
+    description: null,
+    price: p.price_cad,
+    schedule_summary: p.schedule_days?.length ? p.schedule_days.join(", ") : null,
+    is_active: p.is_active,
+  };
+}
+
 export default async function ProgramsPage() {
-  let programs: DBProgram[] = FALLBACK as DBProgram[];
+  let programs: Program[] = FALLBACK as Program[];
 
   try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("programs")
-      .select("id, name, age_group, description, price, schedule_summary, is_active")
-      .eq("is_active", true)
-      .order("price", { ascending: true });
-    if (data && data.length > 0) programs = data as DBProgram[];
-  } catch { /* offline fallback */ }
+    const res = await fetch(`${DASHBOARD_API}/api/v1/public/programs`, {
+      next: { revalidate: 60 },
+    });
+    if (res.ok) {
+      const data: DashboardProgram[] = await res.json();
+      if (data.length > 0) programs = data.map(adapt);
+    }
+  } catch { /* offline — use fallback */ }
 
   return (
     <div className="min-h-screen bg-white">
@@ -169,7 +187,7 @@ export default async function ProgramsPage() {
                       )}
                     </div>
                     <Link
-                      href="/sign-up"
+                      href="/contact"
                       className="mt-6 inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-5 py-3 rounded-full text-xs uppercase tracking-wide transition-colors shadow-[0_0_0_1px_rgba(243,108,33,0.4),0_8px_30px_-6px_rgba(243,108,33,0.7)]"
                     >
                       Register for {p.name} <ArrowRight size={15} />

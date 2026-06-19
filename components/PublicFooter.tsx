@@ -3,13 +3,16 @@ import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
+const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174";
+const ADMIN_URL  = process.env.NEXT_PUBLIC_ADMIN_URL  || "http://localhost:5173";
+
 export default function PublicFooter() {
   return (
     <footer className="bg-brand-black border-t border-brand-gray-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand */}
-          <div>
+          <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-3">
               <Image src="/brand/shakhtar-crest.png" alt="" width={207} height={321} className="h-8 w-auto" />
               <span className="text-white font-bold text-base">Shakhtar <span className="text-brand-orange">Academy</span></span>
@@ -41,7 +44,7 @@ export default function PublicFooter() {
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Contact + Portals */}
           <div>
             <h4 className="text-white font-semibold text-sm mb-3">Contact</h4>
             <ul className="space-y-2 text-sm">
@@ -59,6 +62,20 @@ export default function PublicFooter() {
                 <MapPin size={13} />{ACADEMY.area}
               </li>
             </ul>
+
+            <h4 className="text-white font-semibold text-sm mt-6 mb-3">Portals</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a href={`${PORTAL_URL}/login`} className="text-brand-gray-600 hover:text-brand-orange transition-colors">
+                  Parent Portal
+                </a>
+              </li>
+              <li>
+                <a href={ADMIN_URL} className="text-brand-gray-600 hover:text-brand-orange transition-colors">
+                  Staff Dashboard
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -66,7 +83,7 @@ export default function PublicFooter() {
           <p className="text-brand-gray-600 text-xs">
             © {new Date().getFullYear()} {ACADEMY.name}. All rights reserved.
           </p>
-          <Link href="/sign-up" className="text-brand-orange text-xs font-semibold hover:underline">
+          <Link href="/contact" className="text-brand-orange text-xs font-semibold hover:underline">
             Register for a Program →
           </Link>
         </div>
