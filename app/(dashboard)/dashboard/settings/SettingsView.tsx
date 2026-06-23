@@ -32,14 +32,9 @@ export default function SettingsView({
     setSaved(false);
 
     const supabase = createClient();
-    const { error: err } = await supabase
-      .from("profiles")
-      .update({
-        full_name: form.full_name || null,
-        phone: form.phone || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", profile!.id);
+    const { error: err } = await supabase.auth.updateUser({
+      data: { full_name: form.full_name || null, phone: form.phone || null },
+    });
 
     if (err) { setError(err.message); setSaving(false); return; }
     setSaving(false);

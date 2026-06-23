@@ -1,197 +1,73 @@
-import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
-import { Calendar, MapPin, Clock, ClipboardList, Trophy, Dumbbell, Star } from "lucide-react";
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import ScheduleView, { type SessionWithAttendance } from '@/app/components/portal/ScheduleView';
 
-interface ProgramRow {
-  id: string;
-  name: string;
-  age_group: string | null;
-  schedule_summary: string | null;
-}
-
-interface EventRow {
-  id: string;
-  title: string;
-  type: string;
-  location: string | null;
-  start_time: string;
-  end_time: string | null;
-  programs: { name: string } | null;
-}
-
-const TYPE_ICONS: Record<string, typeof Dumbbell> = {
-  training: Dumbbell,
-  game: Trophy,
-  tournament: Star,
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  training: "Training",
-  game: "Game",
-  tournament: "Tournament",
-};
-
-const fmtDay = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric" });
-
-const fmtTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString("en-CA", { hour: "numeric", minute: "2-digit" });
-
-export default async function DashboardSchedulePage() {
+export default async function SchedulePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) redirect('/sign-in');
 
-  const { data: playersData } = await supabase
-    .from("players")
-    .select("id")
-    .eq("parent_id", user.id);
-  const playerIds = (playersData ?? []).map((p) => p.id as string);
+  const admin = createAdminClient();
+  const { data: player } = await admin
+    .from('players')
+    .select('id, program_id')
+    .eq('user_id', user.id)
+    .limit(1)
+    .maybeSingle();
 
-  const activePrograms: ProgramRow[] = [];
-  if (playerIds.length > 0) {
-    const { data } = await supabase
-      .from("registrations")
-      .select("status, programs(id, name, age_group, schedule_summary)")
-      .in("player_id", playerIds)
-      .eq("status", "active");
+  let sessions: SessionWithAttendance[] = [];
 
-    const seen = new Set<string>();
-    for (const row of (data ?? []) as unknown as { programs: ProgramRow | null }[]) {
-      const p = row.programs;
-      if (p && !seen.has(p.id)) { seen.add(p.id); activePrograms.push(p); }
+  if (player?.program_id) {
+    const today = new Date().toISOString().split('T')[0];
+    const { data: raw } = await admin
+      .from('sessions')
+      .select('id, session_date, time_start, time_end, address, google_maps_url, notes, programs(name), workers(first_name, last_name)')
+      .eq('program_id', player.program_id)
+      .eq('is_cancelled', false)
+      .gte('session_date', today)
+      .order('session_date').order('time_start')
+      .limit(40);
+
+    if (raw && raw.length > 0) {
+      const { data: att } = await admin
+        .from('attendance')
+        .select('session_id, id, status')
+        .eq('player_id', player.id)
+        .in('session_id', raw.map(s => s.id));
+
+      const attMap = Object.fromEntries((att ?? []).map(a => [a.session_id, a]));
+      sessions = raw.map(s => {
+        const prog = (Array.isArray(s.programs) ? s.programs[0] : s.programs) as { name: string } | null;
+        const wk = (Array.isArray(s.workers) ? s.workers[0] : s.workers) as { first_name: string; last_name: string } | null;
+        return {
+          id: s.id,
+          session_date: s.session_date,
+          time_start: s.time_start,
+          time_end: s.time_end,
+          address: s.address,
+          google_maps_url: s.google_maps_url,
+          notes: s.notes,
+          program_name: prog?.name ?? null,
+          trainer_name: wk ? `${wk.first_name} ${wk.last_name}` : null,
+          my_status: attMap[s.id]?.status ?? 'no_answer',
+          attendance_id: attMap[s.id]?.id ?? null,
+        };
+      });
     }
   }
 
-  const programIds = activePrograms.map((p) => p.id);
-
-  let events: EventRow[] = [];
-  if (programIds.length > 0) {
-    const { data } = await supabase
-      .from("events")
-      .select("id, title, type, location, start_time, end_time, programs(name)")
-      .in("program_id", programIds)
-      .gte("start_time", new Date().toISOString())
-      .order("start_time", { ascending: true })
-      .limit(30);
-    events = (data ?? []) as unknown as EventRow[];
-  }
-
-  // Group events by calendar day
-  const groups: { day: string; items: EventRow[] }[] = [];
-  for (const e of events) {
-    const day = fmtDay(e.start_time);
-    const last = groups[groups.length - 1];
-    if (last && last.day === day) last.items.push(e);
-    else groups.push({ day, items: [e] });
-  }
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-brand-black">My Schedule</h1>
-        <p className="text-brand-gray-400 text-sm mt-0.5">
-          Upcoming sessions, games, and events for your registered programs.
+        <h1 className="text-2xl font-bold text-brand-black">Training Schedule</h1>
+        <p className="text-sm text-brand-gray-400 mt-0.5">
+          {sessions.length > 0
+            ? `${sessions.length} upcoming session${sessions.length !== 1 ? 's' : ''}`
+            : 'No sessions scheduled yet'}
         </p>
       </div>
-
-      {activePrograms.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-brand-gray-200 py-16 text-center px-6">
-          <Calendar size={32} className="mx-auto text-brand-gray-200 mb-3" />
-          <p className="text-brand-gray-400 text-sm max-w-sm mx-auto">
-            Your personalized schedule shows up here once you have an{" "}
-            <span className="font-medium text-brand-black">active</span> program registration.
-          </p>
-          <Link
-            href="/dashboard/registrations"
-            className="mt-4 inline-flex items-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors"
-          >
-            <ClipboardList size={15} /> Register a Player
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Upcoming events */}
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-brand-gray-200 overflow-hidden">
-            <div className="px-5 py-4 border-b border-brand-gray-200">
-              <h2 className="font-semibold text-brand-black">Upcoming</h2>
-            </div>
-            {groups.length === 0 ? (
-              <div className="py-14 text-center text-sm text-brand-gray-400 px-6">
-                No upcoming events scheduled right now. Check back soon!
-              </div>
-            ) : (
-              <div className="divide-y divide-brand-gray-200">
-                {groups.map((g) => (
-                  <div key={g.day} className="px-5 py-4">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray-400 mb-3">{g.day}</p>
-                    <ul className="space-y-3">
-                      {g.items.map((e) => {
-                        const Icon = TYPE_ICONS[e.type] ?? Calendar;
-                        return (
-                          <li key={e.id} className="flex items-start gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-brand-orange/10 flex items-center justify-center shrink-0">
-                              <Icon size={15} className="text-brand-orange" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <p className="text-sm font-medium text-brand-black truncate">{e.title}</p>
-                                <span className="text-xs font-bold text-brand-orange bg-brand-orange-light px-2 py-0.5 rounded-full shrink-0">
-                                  {TYPE_LABELS[e.type] ?? e.type}
-                                </span>
-                              </div>
-                              <div className="flex flex-wrap items-center gap-3 mt-1">
-                                <span className="flex items-center gap-1 text-xs text-brand-gray-400">
-                                  <Clock size={10} />
-                                  {fmtTime(e.start_time)}{e.end_time ? ` – ${fmtTime(e.end_time)}` : ""}
-                                </span>
-                                {e.location && (
-                                  <span className="flex items-center gap-1 text-xs text-brand-gray-400">
-                                    <MapPin size={10} /> {e.location}
-                                  </span>
-                                )}
-                                {e.programs?.name && (
-                                  <span className="text-xs text-brand-gray-400">{e.programs.name}</span>
-                                )}
-                              </div>
-                            </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Active programs / weekly rhythm */}
-          <div className="bg-white rounded-2xl border border-brand-gray-200 overflow-hidden h-fit">
-            <div className="px-5 py-4 border-b border-brand-gray-200">
-              <h2 className="font-semibold text-brand-black">Your Programs</h2>
-            </div>
-            <ul className="divide-y divide-brand-gray-200">
-              {activePrograms.map((p) => (
-                <li key={p.id} className="px-5 py-4">
-                  <p className="text-sm font-semibold text-brand-black">{p.name}</p>
-                  <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                    {p.age_group && (
-                      <span className="text-xs font-bold text-brand-orange bg-brand-orange-light px-2 py-0.5 rounded-full">
-                        {p.age_group}
-                      </span>
-                    )}
-                  </div>
-                  {p.schedule_summary && (
-                    <p className="flex items-start gap-1.5 text-xs text-brand-gray-600 mt-2">
-                      <Clock size={12} className="text-brand-gray-400 mt-0.5 shrink-0" /> {p.schedule_summary}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
+      <ScheduleView sessions={sessions} playerId={player?.id ?? ''} />
     </div>
   );
 }
