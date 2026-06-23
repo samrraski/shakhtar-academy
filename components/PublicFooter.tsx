@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
-const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174";
 const ADMIN_URL  = process.env.NEXT_PUBLIC_ADMIN_URL  || "http://localhost:5173";
 
 export default function PublicFooter() {
@@ -66,9 +65,9 @@ export default function PublicFooter() {
             <h4 className="text-white font-semibold text-sm mt-6 mb-3">Portals</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href={`${PORTAL_URL}/login`} className="text-brand-gray-600 hover:text-brand-orange transition-colors">
+                <Link href="/sign-in" className="text-brand-gray-600 hover:text-brand-orange transition-colors">
                   Parent Portal
-                </a>
+                </Link>
               </li>
               <li>
                 <a href={ADMIN_URL} className="text-brand-gray-600 hover:text-brand-orange transition-colors">

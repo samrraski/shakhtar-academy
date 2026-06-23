@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import { Phone, Menu, X, LogIn } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
-const PORTAL_URL = process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174";
 
 const NAV_LINKS = [
   { href: "/about",    label: "About" },
@@ -76,13 +75,13 @@ export default function PublicNav() {
             <a href={`tel:${ACADEMY.phone}`} className="hidden lg:flex items-center gap-1.5 text-brand-gray-400 hover:text-white text-sm transition-colors">
               <Phone size={13} />{ACADEMY.phone}
             </a>
-            <a
-              href={`${PORTAL_URL}/login`}
+            <Link
+              href="/sign-in"
               className="hidden sm:flex items-center gap-1.5 text-brand-gray-400 hover:text-white text-sm font-medium px-3 py-1.5 transition-colors"
             >
               <LogIn size={14} />
               Parent Portal
-            </a>
+            </Link>
             <Link
               href="/contact"
               className="hidden sm:block bg-brand-orange hover:bg-brand-orange-hover text-white font-bold text-sm px-4 py-1.5 rounded-lg transition-colors"
@@ -107,13 +106,13 @@ export default function PublicNav() {
               {l.label}
             </Link>
           ))}
-          <a
-            href={`${PORTAL_URL}/login`}
+          <Link
+            href="/sign-in"
             onClick={() => setMobileOpen(false)}
             className="block px-3 py-2.5 text-sm font-medium text-brand-gray-400 hover:text-white transition-colors"
           >
             Parent Portal
-          </a>
+          </Link>
           <div className="pt-2">
             <Link href="/contact" onClick={() => setMobileOpen(false)}
               className="block w-full text-center bg-brand-orange text-white font-bold text-sm px-4 py-2.5 rounded-lg">
