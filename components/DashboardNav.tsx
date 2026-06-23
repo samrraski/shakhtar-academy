@@ -7,17 +7,19 @@ import { createClient } from "@/lib/supabase/client";
 import {
   LayoutDashboard,
   Users,
-  ClipboardList,
+  DollarSign,
   Calendar,
+  Newspaper,
   Settings,
   LogOut,
 } from "lucide-react";
 
 const navLinks = [
-  { href: "/dashboard",               label: "Overview",      icon: LayoutDashboard },
-  { href: "/dashboard/players",       label: "My Players",    icon: Users           },
-  { href: "/dashboard/registrations", label: "Registrations", icon: ClipboardList   },
-  { href: "/dashboard/schedule",      label: "Schedule",      icon: Calendar        },
+  { href: "/dashboard",          label: "Overview",   icon: LayoutDashboard },
+  { href: "/dashboard/players",  label: "My Player",  icon: Users           },
+  { href: "/dashboard/schedule", label: "Schedule",   icon: Calendar        },
+  { href: "/dashboard/billing",  label: "Billing",    icon: DollarSign      },
+  { href: "/dashboard/posts",    label: "News",       icon: Newspaper       },
 ];
 
 export default function DashboardNav({ userName }: { userName?: string }) {

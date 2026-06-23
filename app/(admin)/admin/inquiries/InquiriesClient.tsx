@@ -11,9 +11,13 @@ interface Inquiry {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  new:       "bg-red-100 text-red-600",
-  contacted: "bg-blue-100 text-blue-700",
-  closed:    "bg-brand-gray-200 text-brand-gray-600",
+  new:         "bg-red-100 text-red-600",
+  in_progress: "bg-blue-100 text-blue-700",
+  resolved:    "bg-brand-gray-200 text-brand-gray-600",
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  new: "New", in_progress: "In Progress", resolved: "Resolved",
 };
 
 const fmt = (iso: string) =>
@@ -26,7 +30,7 @@ export default function InquiriesClient({ initialInquiries }: { initialInquiries
 
   const newCount = inquiries.filter(i => i.status === "new").length;
 
-  function handleAction(id: string, status: "contacted" | "closed") {
+  function handleAction(id: string, status: "in_progress" | "resolved") {
     setLoadingId(id);
     startTransition(async () => {
       try {
@@ -80,8 +84,8 @@ export default function InquiriesClient({ initialInquiries }: { initialInquiries
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="text-xs text-brand-gray-400">{fmt(inq.created_at)}</span>
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${STATUS_STYLES[inq.status] ?? "bg-gray-100 text-gray-600"}`}>
-                      {inq.status}
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${STATUS_STYLES[inq.status] ?? "bg-gray-100 text-gray-600"}`}>
+                      {STATUS_LABELS[inq.status] ?? inq.status}
                     </span>
                   </div>
                 </div>
@@ -92,21 +96,15 @@ export default function InquiriesClient({ initialInquiries }: { initialInquiries
                 )}
                 <div className="flex gap-3 mt-3 pt-3 border-t border-brand-gray-200">
                   {inq.status === "new" && (
-                    <button
-                      disabled={isLoading}
-                      onClick={() => handleAction(inq.id, "contacted")}
-                      className="text-xs text-blue-600 hover:underline font-medium disabled:opacity-40"
-                    >
-                      {isLoading ? "…" : "Mark Contacted"}
+                    <button disabled={isLoading} onClick={() => handleAction(inq.id, "in_progress")}
+                      className="text-xs text-blue-600 hover:underline font-medium disabled:opacity-40">
+                      {isLoading ? "…" : "Mark In Progress"}
                     </button>
                   )}
-                  {inq.status !== "closed" && (
-                    <button
-                      disabled={isLoading}
-                      onClick={() => handleAction(inq.id, "closed")}
-                      className="text-xs text-brand-gray-400 hover:underline font-medium disabled:opacity-40"
-                    >
-                      {isLoading ? "…" : "Close"}
+                  {inq.status !== "resolved" && (
+                    <button disabled={isLoading} onClick={() => handleAction(inq.id, "resolved")}
+                      className="text-xs text-brand-gray-400 hover:underline font-medium disabled:opacity-40">
+                      {isLoading ? "…" : "Mark Resolved"}
                     </button>
                   )}
                   <a href={`mailto:${inq.email}`} className="text-xs text-brand-orange hover:underline font-medium ml-auto">
