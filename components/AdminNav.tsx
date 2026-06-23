@@ -5,16 +5,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, ClipboardList,
-  Calendar, MessageSquare, BookOpen, LogOut, ChevronRight,
+  Calendar, MessageSquare, BookOpen, LogOut, ChevronRight, DollarSign,
 } from "lucide-react";
 
 const NAV = [
-  { href: "/admin",               label: "Overview",       icon: LayoutDashboard },
-  { href: "/admin/programs",      label: "Programs",       icon: BookOpen        },
-  { href: "/admin/registrations", label: "Registrations",  icon: ClipboardList   },
-  { href: "/admin/events",        label: "Events",         icon: Calendar        },
-  { href: "/admin/inquiries",     label: "Inquiries",      icon: MessageSquare   },
-  { href: "/admin/users",         label: "Users",          icon: Users           },
+  { href: "/admin",               label: "Overview",    icon: LayoutDashboard },
+  { href: "/admin/players",       label: "Players",     icon: Users           },
+  { href: "/admin/programs",      label: "Programs",    icon: BookOpen        },
+  { href: "/admin/sessions",      label: "Sessions",    icon: Calendar        },
+  { href: "/admin/workers",       label: "Workers",     icon: Users           },
+  { href: "/admin/posts",         label: "Posts",       icon: MessageSquare   },
+  { href: "/admin/inquiries",     label: "Inquiries",   icon: MessageSquare   },
+  { href: "/admin/financial",     label: "Financial",   icon: DollarSign      },
 ];
 
 export default function AdminNav() {

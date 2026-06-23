@@ -1,7 +1,12 @@
-import { redirect } from "next/navigation";
+import AdminNav from "@/components/AdminNav";
 
-const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:5173";
-
-export default function AdminLayout() {
-  redirect(ADMIN_URL);
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex min-h-screen bg-gray-50">
+      <AdminNav />
+      <main className="flex-1 ml-64 min-h-screen">
+        <div className="p-6">{children}</div>
+      </main>
+    </div>
+  );
 }

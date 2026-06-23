@@ -13,45 +13,41 @@ export default async function AdminOverviewPage() {
 
   try {
     const supabase = await createClient();
-    const [programs, users, players, registrations, events, inquiries] = await Promise.all([
-      supabase.from("programs").select("id", { count: "exact", head: true }),
-      supabase.from("profiles").select("id", { count: "exact", head: true }),
-      supabase.from("players").select("id", { count: "exact", head: true }),
-      supabase.from("registrations").select("id, status"),
-      supabase.from("events").select("id", { count: "exact", head: true }),
+    const [programs, players, workers, sessions, inquiries] = await Promise.all([
+      supabase.from("programs").select("id", { count: "exact", head: true }).eq("is_active", true),
+      supabase.from("players").select("id", { count: "exact", head: true }).eq("is_active", true),
+      supabase.from("workers").select("id", { count: "exact", head: true }).eq("is_active", true),
+      supabase.from("sessions").select("id", { count: "exact", head: true }).gte("session_date", new Date().toISOString().split("T")[0]),
       supabase.from("inquiries").select("id, status"),
     ]);
 
-    const regs = (registrations.data ?? []) as { status: string }[];
     const inqs = (inquiries.data ?? []) as { status: string }[];
 
     data = {
       programs: programs.count ?? 0,
-      users: users.count ?? 0,
+      users: workers.count ?? 0,
       players: players.count ?? 0,
       registrations: {
-        pending:   regs.filter(r => r.status === "pending").length,
-        active:    regs.filter(r => r.status === "active").length,
-        cancelled: regs.filter(r => r.status === "cancelled").length,
+        pending:   0,
+        active:    sessions.count ?? 0,
+        cancelled: 0,
       },
-      events: events.count ?? 0,
+      events: sessions.count ?? 0,
       inquiries: {
         new:       inqs.filter(i => i.status === "new").length,
-        contacted: inqs.filter(i => i.status === "contacted").length,
+        contacted: inqs.filter(i => i.status === "in_progress").length,
       },
     };
     connected = true;
   } catch { /* Supabase not connected — showing defaults */ }
 
   const cards = [
-    { label: "Programs",           value: data.programs,                       icon: BookOpen,      color: "bg-blue-500",   href: "/admin/programs"      },
-    { label: "Registered Parents", value: data.users,                          icon: Users,         color: "bg-purple-500", href: "/admin/users"         },
-    { label: "Players",            value: data.players,                        icon: TrendingUp,    color: "bg-green-500",  href: "/admin/users"         },
-    { label: "Active Enrolments",  value: data.registrations.active,           icon: ClipboardList, color: "bg-brand-orange", href: "/admin/registrations" },
-    { label: "Pending Approval",   value: data.registrations.pending,          icon: ClipboardList, color: "bg-yellow-500", href: "/admin/registrations" },
-    { label: "Upcoming Events",    value: data.events,                         icon: Calendar,      color: "bg-cyan-500",   href: "/admin/events"        },
-    { label: "New Inquiries",      value: data.inquiries.new,                  icon: MessageSquare, color: "bg-red-500",    href: "/admin/inquiries"     },
-    { label: "Inquiries Contacted",value: data.inquiries.contacted,            icon: MessageSquare, color: "bg-gray-500",   href: "/admin/inquiries"     },
+    { label: "Active Programs",   value: data.programs,            icon: BookOpen,      color: "bg-blue-500",     href: "/admin/programs"   },
+    { label: "Active Players",    value: data.players,             icon: TrendingUp,    color: "bg-green-500",    href: "/admin/players"    },
+    { label: "Workers",           value: data.users,               icon: Users,         color: "bg-purple-500",   href: "/admin/workers"    },
+    { label: "Upcoming Sessions", value: data.events,              icon: Calendar,      color: "bg-cyan-500",     href: "/admin/sessions"   },
+    { label: "New Inquiries",     value: data.inquiries.new,       icon: MessageSquare, color: "bg-red-500",      href: "/admin/inquiries"  },
+    { label: "In Progress",       value: data.inquiries.contacted, icon: MessageSquare, color: "bg-brand-orange", href: "/admin/inquiries"  },
   ];
 
   return (
