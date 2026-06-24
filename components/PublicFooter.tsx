@@ -24,7 +24,6 @@ export default function PublicFooter() {
             <h4 className="text-white font-semibold text-sm mb-3">Club</h4>
             <ul className="space-y-2 text-sm">
               <li><Link href="/about"    className="text-brand-gray-600 hover:text-brand-orange transition-colors">About Us</Link></li>
-              <li><Link href="/coaches"  className="text-brand-gray-600 hover:text-brand-orange transition-colors">Coaches</Link></li>
               <li><Link href="/schedule" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Schedule</Link></li>
               <li><Link href="/contact"  className="text-brand-gray-600 hover:text-brand-orange transition-colors">Contact</Link></li>
             </ul>

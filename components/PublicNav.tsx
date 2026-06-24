@@ -11,7 +11,6 @@ import { ACADEMY } from "@/lib/config";
 const NAV_LINKS = [
   { href: "/about",    label: "About" },
   { href: "/programs", label: "Programs" },
-  { href: "/coaches",  label: "Coaches" },
   { href: "/schedule", label: "Schedule" },
   { href: "/contact",  label: "Contact" },
 ];
