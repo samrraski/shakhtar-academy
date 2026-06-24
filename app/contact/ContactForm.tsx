@@ -13,7 +13,6 @@ const PROGRAMS = [
 
 const EMPTY_FORM = { name: "", email: "", phone: "", program_interest: "", message: "" };
 
-const API_URL = process.env.NEXT_PUBLIC_DASHBOARD_API_URL || "http://localhost:3000";
 
 export default function ContactForm() {
   const [form, setForm] = useState(EMPTY_FORM);
@@ -36,14 +35,15 @@ export default function ContactForm() {
       : form.message;
 
     try {
-      const res = await fetch(`${API_URL}/api/v1/inquiries`, {
+      const res = await fetch(`/api/inquiries`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contact_name:  form.name.trim(),
-          contact_email: form.email.trim() || undefined,
-          contact_phone: form.phone.trim() || undefined,
-          message:       fullMessage.trim(),
+          name:             form.name.trim(),
+          email:            form.email.trim() || undefined,
+          phone:            form.phone.trim() || undefined,
+          program_interest: form.program_interest || undefined,
+          message:          fullMessage.trim(),
         }),
       });
 

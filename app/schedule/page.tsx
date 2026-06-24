@@ -6,7 +6,6 @@ import { ArrowRight, Calendar, MapPin, Trophy, Clock } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-const DASHBOARD_API = process.env.DASHBOARD_API_URL || "http://localhost:3000";
 
 interface LiveSession {
   id: string;
@@ -50,11 +49,30 @@ const WEEKLY_SCHEDULE = [
 export default async function SchedulePage() {
   let sessions: LiveSession[] = [];
   try {
-    const res = await fetch(`${DASHBOARD_API}/api/v1/public/sessions?days=60`, {
-      next: { revalidate: 300 },
-    });
-    if (res.ok) sessions = await res.json();
-  } catch { /* offline — show static schedule only */ }
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
+    const today = new Date().toISOString().split("T")[0];
+    const in60 = new Date(Date.now() + 60 * 86400000).toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("sessions")
+      .select("id,session_date,time_start,time_end,address,google_maps_url,programs(name,min_age,max_age),workers(first_name,last_name)")
+      .gte("session_date", today).lte("session_date", in60)
+      .eq("is_cancelled", false)
+      .order("session_date").order("time_start")
+      .limit(30);
+    sessions = (data ?? []).map((s: any) => ({
+      id: s.id,
+      session_date: s.session_date,
+      time_start: s.time_start,
+      time_end: s.time_end,
+      address: s.address,
+      google_maps_url: s.google_maps_url,
+      program_name: s.programs?.name ?? null,
+      age_min: s.programs?.min_age ?? null,
+      age_max: s.programs?.max_age ?? null,
+      trainer_name: s.workers ? `${s.workers.first_name} ${s.workers.last_name}` : null,
+    }));
+  } catch { /* show static schedule only */ }
 
   return (
     <div className="min-h-screen bg-white">
@@ -196,10 +214,7 @@ export default async function SchedulePage() {
 
           <p className="mt-5 text-xs text-brand-gray-400">
             Registered families see their full schedule and get session reminders in the{" "}
-            <a
-              href={process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174"}
-              className="text-brand-orange hover:underline font-medium"
-            >
+            <a href="/sign-in" className="text-brand-orange hover:underline font-medium">
               parent portal
             </a>
             .
@@ -225,7 +240,7 @@ export default async function SchedulePage() {
             {`Create a free parent account to register your player and see their program's schedule, upcoming games, and registration status all in one place.`}
           </p>
           <a
-            href={`${process.env.NEXT_PUBLIC_PORTAL_URL || "http://localhost:5174"}/login`}
+            href="/sign-in"
             className="mt-7 inline-flex items-center justify-center gap-2 bg-brand-orange hover:bg-brand-orange-hover text-white font-bold px-7 py-3.5 rounded-full text-sm uppercase tracking-wide transition-colors shadow-[0_0_0_1px_rgba(243,108,33,0.4),0_8px_30px_-6px_rgba(243,108,33,0.7)]"
           >
             Go to Parent Portal <ArrowRight size={16} />

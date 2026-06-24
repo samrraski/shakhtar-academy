@@ -8,7 +8,6 @@ import { ArrowRight, Clock, MapPin, CheckCircle2 } from "lucide-react";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const DASHBOARD_API = process.env.DASHBOARD_API_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   title: "Programs",
@@ -59,11 +58,12 @@ const FALLBACK = [
 ];
 
 interface DashboardProgram {
-  id: string; name: string; age_min: number; age_max: number;
-  price_cad: number; schedule_days: string[]; is_active: boolean;
+  id: string; name: string; min_age: number | null; max_age: number | null;
+  price_cad: number; gst_rate: number; schedule_days: string[] | null;
+  schedule_time_start: string | null; schedule_time_end: string | null;
+  location: string | null; description: string | null; is_active: boolean;
 }
 
-// Normalised shape shared with the fallback
 interface Program {
   id: string; name: string; age_group: string;
   description: string | null; price: number | null;
@@ -71,13 +71,18 @@ interface Program {
 }
 
 function adapt(p: DashboardProgram): Program {
+  const days = p.schedule_days?.join(", ") ?? "";
+  const time = p.schedule_time_start
+    ? ` · ${p.schedule_time_start.slice(0,5)}–${p.schedule_time_end?.slice(0,5) ?? ""}`
+    : "";
+  const loc = p.location ? ` · ${p.location}` : "";
   return {
     id: p.id,
     name: p.name,
-    age_group: `U${p.age_min} – U${p.age_max}`,
-    description: null,
+    age_group: p.min_age && p.max_age ? `U${p.min_age} – U${p.max_age}` : p.min_age ? `U${p.min_age}+` : "All ages",
+    description: p.description,
     price: p.price_cad,
-    schedule_summary: p.schedule_days?.length ? p.schedule_days.join(", ") : null,
+    schedule_summary: days ? `${days}${time}${loc}` : null,
     is_active: p.is_active,
   };
 }
@@ -86,13 +91,14 @@ export default async function ProgramsPage() {
   let programs: Program[] = FALLBACK as Program[];
 
   try {
-    const res = await fetch(`${DASHBOARD_API}/api/v1/public/programs`, {
-      next: { revalidate: 60 },
-    });
-    if (res.ok) {
-      const data: DashboardProgram[] = await res.json();
-      if (data.length > 0) programs = data.map(adapt);
-    }
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from("programs")
+      .select("id,name,description,min_age,max_age,price_cad,gst_rate,schedule_days,schedule_time_start,schedule_time_end,location,is_active")
+      .eq("is_active", true)
+      .order("price_cad");
+    if (data && data.length > 0) programs = data.map(adapt);
   } catch { /* offline — use fallback */ }
 
   return (
