@@ -39,10 +39,9 @@ export default function ContactForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name:             form.name.trim(),
-          email:            form.email.trim() || undefined,
-          phone:            form.phone.trim() || undefined,
-          program_interest: form.program_interest || undefined,
+          contact_name:     form.name.trim(),
+          contact_email:    form.email.trim() || undefined,
+          contact_phone:    form.phone.trim() || undefined,
           message:          fullMessage.trim(),
         }),
       });

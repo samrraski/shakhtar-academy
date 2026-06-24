@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { Users, ClipboardList, Calendar, MessageSquare, BookOpen, TrendingUp } from "lucide-react";
+import { Users, Calendar, MessageSquare, BookOpen, TrendingUp } from "lucide-react";
 
 const MOCK = {
   programs: 4, users: 0, players: 0,

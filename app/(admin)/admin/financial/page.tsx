@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { DollarSign, TrendingUp, TrendingDown, Users } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
 
 interface FinancialData {
   bills: any[]; payments: any[]; payroll: any[]; expenses: any[];
