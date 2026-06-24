@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
-  LayoutDashboard,
   Users,
   DollarSign,
   Calendar,
@@ -15,7 +14,6 @@ import {
 } from "lucide-react";
 
 const navLinks = [
-  { href: "/dashboard",          label: "Overview",   icon: LayoutDashboard },
   { href: "/dashboard/players",  label: "My Player",  icon: Users           },
   { href: "/dashboard/schedule", label: "Schedule",   icon: Calendar        },
   { href: "/dashboard/billing",  label: "Billing",    icon: DollarSign      },
