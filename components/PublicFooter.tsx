@@ -33,10 +33,10 @@ export default function PublicFooter() {
           <div>
             <h4 className="text-white font-semibold text-sm mb-3">Programs</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Mini Strikers (Ages 6–8)</Link></li>
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Development Squad (Ages 9–12)</Link></li>
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Elite Pathway (Ages 13–16)</Link></li>
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Pre-Academy (Ages 17+)</Link></li>
+              <li><Link href="/programs#mini-strikers"     className="text-brand-gray-600 hover:text-brand-orange transition-colors">Mini Strikers (Ages 6–8)</Link></li>
+              <li><Link href="/programs#development-squad" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Development Squad (Ages 9–12)</Link></li>
+              <li><Link href="/programs#elite-pathway"     className="text-brand-gray-600 hover:text-brand-orange transition-colors">Elite Pathway (Ages 13–16)</Link></li>
+              <li><Link href="/programs#pre-academy"       className="text-brand-gray-600 hover:text-brand-orange transition-colors">Pre-Academy (Ages 17+)</Link></li>
             </ul>
           </div>
 

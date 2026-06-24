@@ -137,7 +137,7 @@ export default async function ProgramsPage() {
             const location = locationParts.join(" · ") || "Shakhtar Academy Field House";
 
             return (
-              <div key={p.name} className="bg-white rounded-2xl border border-brand-gray-200 overflow-hidden shadow-sm">
+              <div key={p.name} id={p.name.toLowerCase().replace(/\s+/g, "-")} className="bg-white rounded-2xl border border-brand-gray-200 overflow-hidden shadow-sm scroll-mt-32">
                 <div className="grid grid-cols-1 lg:grid-cols-3">
                   <div className={`lg:col-span-2 p-7 sm:p-8 ${i % 2 === 1 ? "lg:order-2" : ""}`}>
                     <div className="flex flex-wrap items-center gap-3 mb-3">
