@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import {
-  LayoutDashboard, Users, ClipboardList,
+  LayoutDashboard, Users,
   Calendar, MessageSquare, BookOpen, LogOut, ChevronRight, DollarSign,
 } from "lucide-react";
 
@@ -21,6 +22,14 @@ const NAV = [
 
 export default function AdminNav() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/sign-in");
+    router.refresh();
+  }
 
   return (
     <aside className="fixed top-0 left-0 h-full w-64 bg-brand-black flex flex-col z-50">
@@ -56,7 +65,7 @@ export default function AdminNav() {
       </nav>
 
       {/* Footer */}
-      <div className="px-3 pb-5 border-t border-white/10 pt-4">
+      <div className="px-3 pb-5 border-t border-white/10 pt-4 space-y-0.5">
         <Link
           href="/"
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-brand-gray-400 hover:text-white hover:bg-white/5 transition-colors"
@@ -64,6 +73,13 @@ export default function AdminNav() {
           <LogOut size={16} />
           Back to Site
         </Link>
+        <button
+          onClick={handleSignOut}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors"
+        >
+          <LogOut size={16} />
+          Sign Out
+        </button>
       </div>
     </aside>
   );
