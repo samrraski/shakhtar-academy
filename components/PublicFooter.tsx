@@ -68,7 +68,7 @@ export default function PublicFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/admin" className="text-brand-gray-600 hover:text-brand-orange transition-colors">
+                <Link href="/sign-in" className="text-brand-gray-600 hover:text-brand-orange transition-colors">
                   Staff Dashboard
                 </Link>
               </li>
