@@ -3,8 +3,6 @@ import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
-const ADMIN_URL  = process.env.NEXT_PUBLIC_ADMIN_URL  || "http://localhost:5173";
-
 export default function PublicFooter() {
   return (
     <footer className="bg-brand-black border-t border-brand-gray-800">
@@ -70,9 +68,9 @@ export default function PublicFooter() {
                 </Link>
               </li>
               <li>
-                <a href={ADMIN_URL} className="text-brand-gray-600 hover:text-brand-orange transition-colors">
+                <Link href="/admin" className="text-brand-gray-600 hover:text-brand-orange transition-colors">
                   Staff Dashboard
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
