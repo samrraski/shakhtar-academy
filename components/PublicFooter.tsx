@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
 import { ACADEMY } from "@/lib/config";
 
 export default function PublicFooter() {
@@ -33,10 +33,10 @@ export default function PublicFooter() {
           <div>
             <h4 className="text-white font-semibold text-sm mb-3">Programs</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Mini Strikers (U6–U8)</Link></li>
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Development Squad (U9–U12)</Link></li>
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Elite Pathway (U13–U16)</Link></li>
-              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Pre-Academy (U17+)</Link></li>
+              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Mini Strikers (Ages 6–8)</Link></li>
+              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Development Squad (Ages 9–12)</Link></li>
+              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Elite Pathway (Ages 13–16)</Link></li>
+              <li><Link href="/programs" className="text-brand-gray-600 hover:text-brand-orange transition-colors">Pre-Academy (Ages 17+)</Link></li>
             </ul>
           </div>
 
@@ -53,9 +53,6 @@ export default function PublicFooter() {
                 <a href={`mailto:${ACADEMY.email}`} className="flex items-center gap-2 text-brand-gray-600 hover:text-brand-orange transition-colors">
                   <Mail size={13} />{ACADEMY.email}
                 </a>
-              </li>
-              <li className="flex items-center gap-2 text-brand-gray-600">
-                <MapPin size={13} />{ACADEMY.area}
               </li>
             </ul>
 

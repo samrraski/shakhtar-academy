@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const INFO = [
   { icon: Phone, label: "Phone",  value: ACADEMY.phone, href: `tel:${ACADEMY.phone}` },
   { icon: Mail,  label: "Email",  value: ACADEMY.email, href: `mailto:${ACADEMY.email}` },
-  { icon: MapPin, label: "Location", value: `${ACADEMY.area} — Shakhtar Academy Field House` },
+  { icon: MapPin, label: "Location", value: "Calgary, AB — Shakhtar Academy Field House" },
   { icon: Clock, label: "Office Hours", value: "Mon–Fri, 9:00 AM – 6:00 PM" },
 ];
 

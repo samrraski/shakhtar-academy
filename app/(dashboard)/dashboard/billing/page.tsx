@@ -103,7 +103,7 @@ export default async function BillingPage() {
 
       <p className="text-xs text-gray-400 text-center">
         For payment inquiries contact the academy at{" "}
-        <a href="mailto:info@shakhtar.academy" className="text-brand-orange hover:underline">info@shakhtar.academy</a>
+        <a href="mailto:info@shakhtarcalgary.ca" className="text-brand-orange hover:underline">info@shakhtarcalgary.ca</a>
       </p>
     </div>
   );
