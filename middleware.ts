@@ -26,28 +26,19 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
   const role = (user?.user_metadata?.role ?? 'player_parent') as string
 
-  const isAuth = path.startsWith('/sign-in') || path.startsWith('/sign-up') || path.startsWith('/forgot-password') || path.startsWith('/reset-password')
-  const isAdmin = path.startsWith('/admin')
+  const isAdminRoute = path.startsWith('/admin')
   const isDashboard = path.startsWith('/dashboard')
 
-  // Authenticated users don't need auth pages
-  if (user && isAuth) {
-    const dest = (role === 'admin' || role === 'worker') ? '/admin' : '/dashboard'
-    return NextResponse.redirect(new URL(dest, request.url))
-  }
-
-  // /admin requires admin or worker
-  if (isAdmin) {
-    if (!user) return NextResponse.redirect(new URL('/sign-in', request.url))
+  // /admin/* requires admin or worker role
+  if (isAdminRoute) {
+    if (!user) return NextResponse.redirect(new URL('/staff-login', request.url))
     if (role !== 'admin' && role !== 'worker')
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL('/sign-in', request.url))
   }
 
   // /dashboard requires any authenticated user
-  if (isDashboard) {
-    if (!user) return NextResponse.redirect(new URL('/sign-in', request.url))
-    if (role === 'admin' || role === 'worker')
-      return NextResponse.redirect(new URL('/admin', request.url))
+  if (isDashboard && !user) {
+    return NextResponse.redirect(new URL('/sign-in', request.url))
   }
 
   return supabaseResponse
