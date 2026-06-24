@@ -58,10 +58,9 @@ const FALLBACK = [
 ];
 
 interface DashboardProgram {
-  id: string; name: string; min_age: number | null; max_age: number | null;
+  id: string; name: string; age_min: number | null; age_max: number | null;
   price_cad: number; gst_rate: number; schedule_days: string[] | null;
-  schedule_time_start: string | null; schedule_time_end: string | null;
-  location: string | null; description: string | null; is_active: boolean;
+  sessions_min: number | null; sessions_max: number | null; is_active: boolean;
 }
 
 interface Program {
@@ -72,17 +71,16 @@ interface Program {
 
 function adapt(p: DashboardProgram): Program {
   const days = p.schedule_days?.join(", ") ?? "";
-  const time = p.schedule_time_start
-    ? ` · ${p.schedule_time_start.slice(0,5)}–${p.schedule_time_end?.slice(0,5) ?? ""}`
+  const sessions = p.sessions_min
+    ? ` · ${p.sessions_min}${p.sessions_max && p.sessions_max !== p.sessions_min ? `–${p.sessions_max}` : ""} sessions/wk`
     : "";
-  const loc = p.location ? ` · ${p.location}` : "";
   return {
     id: p.id,
     name: p.name,
-    age_group: p.min_age && p.max_age ? `U${p.min_age} – U${p.max_age}` : p.min_age ? `U${p.min_age}+` : "All ages",
-    description: p.description,
+    age_group: p.age_min && p.age_max ? `U${p.age_min} – U${p.age_max}` : p.age_min ? `U${p.age_min}+` : "All ages",
+    description: null,
     price: p.price_cad,
-    schedule_summary: days ? `${days}${time}${loc}` : null,
+    schedule_summary: days ? `${days}${sessions}` : null,
     is_active: p.is_active,
   };
 }
@@ -95,7 +93,7 @@ export default async function ProgramsPage() {
     const supabase = createAdminClient();
     const { data } = await supabase
       .from("programs")
-      .select("id,name,description,min_age,max_age,price_cad,gst_rate,schedule_days,schedule_time_start,schedule_time_end,location,is_active")
+      .select("id,name,age_min,age_max,price_cad,gst_rate,schedule_days,sessions_min,sessions_max,is_active")
       .eq("is_active", true)
       .order("price_cad");
     if (data && data.length > 0) programs = data.map(adapt);

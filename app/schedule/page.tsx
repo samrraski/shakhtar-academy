@@ -55,7 +55,7 @@ export default async function SchedulePage() {
     const in60 = new Date(Date.now() + 60 * 86400000).toISOString().split("T")[0];
     const { data } = await supabase
       .from("sessions")
-      .select("id,session_date,time_start,time_end,address,google_maps_url,programs(name,min_age,max_age),workers(first_name,last_name)")
+      .select("id,session_date,time_start,time_end,address,google_maps_url,programs(name,age_min,age_max),workers(first_name,last_name)")
       .gte("session_date", today).lte("session_date", in60)
       .eq("is_cancelled", false)
       .order("session_date").order("time_start")
@@ -68,8 +68,8 @@ export default async function SchedulePage() {
       address: s.address,
       google_maps_url: s.google_maps_url,
       program_name: s.programs?.name ?? null,
-      age_min: s.programs?.min_age ?? null,
-      age_max: s.programs?.max_age ?? null,
+      age_min: s.programs?.age_min ?? null,
+      age_max: s.programs?.age_max ?? null,
       trainer_name: s.workers ? `${s.workers.first_name} ${s.workers.last_name}` : null,
     }));
   } catch { /* show static schedule only */ }

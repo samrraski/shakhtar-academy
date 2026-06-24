@@ -6,15 +6,13 @@ import { revalidatePath } from "next/cache";
 export interface ProgramPayload {
   id?: string;
   name: string;
-  description: string;
-  min_age: number | null;
-  max_age: number | null;
+  age_min: number | null;
+  age_max: number | null;
   price_cad: number;
   gst_rate: number;
   schedule_days: string[];
-  schedule_time_start: string;
-  schedule_time_end: string;
-  location: string;
+  sessions_min: number | null;
+  sessions_max: number | null;
   is_active: boolean;
 }
 
@@ -25,15 +23,13 @@ export async function upsertProgram(payload: ProgramPayload) {
   const supabase = createAdminClient();
   const fields = {
     name: payload.name,
-    description: payload.description || null,
-    min_age: payload.min_age,
-    max_age: payload.max_age,
+    age_min: payload.age_min,
+    age_max: payload.age_max,
     price_cad: payload.price_cad,
     gst_rate: payload.gst_rate,
     schedule_days: payload.schedule_days,
-    schedule_time_start: payload.schedule_time_start || null,
-    schedule_time_end: payload.schedule_time_end || null,
-    location: payload.location || null,
+    sessions_min: payload.sessions_min,
+    sessions_max: payload.sessions_max,
     is_active: payload.is_active,
   };
 

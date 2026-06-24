@@ -5,21 +5,20 @@ import { Plus, CheckCircle2, XCircle, X, Loader2 } from "lucide-react";
 import { upsertProgram, toggleProgramStatus, type ProgramPayload } from "./actions";
 
 interface Program {
-  id: string; name: string; description: string | null;
-  min_age: number | null; max_age: number | null;
+  id: string; name: string;
+  age_min: number | null; age_max: number | null;
   price_cad: number; gst_rate: number;
   schedule_days: string[] | null;
-  schedule_time_start: string | null; schedule_time_end: string | null;
-  location: string | null; is_active: boolean;
+  sessions_min: number | null; sessions_max: number | null;
+  is_active: boolean;
 }
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const EMPTY: Omit<ProgramPayload, "id"> = {
-  name: "", description: "", min_age: null, max_age: null,
+  name: "", age_min: null, age_max: null,
   price_cad: 0, gst_rate: 0.05, schedule_days: [],
-  schedule_time_start: "", schedule_time_end: "",
-  location: "", is_active: true,
+  sessions_min: null, sessions_max: null, is_active: true,
 };
 
 export default function ProgramsClient({ initial }: { initial: Program[] }) {
@@ -33,13 +32,12 @@ export default function ProgramsClient({ initial }: { initial: Program[] }) {
   function openEdit(p: Program) {
     setEditing(p);
     setForm({
-      name: p.name, description: p.description ?? "",
-      min_age: p.min_age, max_age: p.max_age,
+      name: p.name,
+      age_min: p.age_min, age_max: p.age_max,
       price_cad: p.price_cad, gst_rate: p.gst_rate,
       schedule_days: p.schedule_days ?? [],
-      schedule_time_start: p.schedule_time_start ?? "",
-      schedule_time_end: p.schedule_time_end ?? "",
-      location: p.location ?? "", is_active: p.is_active,
+      sessions_min: p.sessions_min, sessions_max: p.sessions_max,
+      is_active: p.is_active,
     });
     setError("");
   }
@@ -111,18 +109,19 @@ export default function ProgramsClient({ initial }: { initial: Program[] }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-brand-gray-200">
-            {programs.map((p) => (
+            {programs.length === 0 ? (
+              <tr><td colSpan={6} className="px-5 py-12 text-center text-brand-gray-400 text-sm">No programs yet. Click &quot;Add Program&quot; to create one.</td></tr>
+            ) : programs.map((p) => (
               <tr key={p.id} className="hover:bg-brand-gray-100/50 transition-colors">
                 <td className="px-5 py-4">
                   <p className="font-semibold text-brand-black">{p.name}</p>
-                  {p.description && <p className="text-xs text-brand-gray-400 mt-0.5 max-w-xs truncate">{p.description}</p>}
                 </td>
                 <td className="px-5 py-4 text-brand-gray-600">
-                  {p.min_age && p.max_age ? `U${p.min_age}–U${p.max_age}` : p.min_age ? `U${p.min_age}+` : "—"}
+                  {p.age_min && p.age_max ? `U${p.age_min}–U${p.age_max}` : p.age_min ? `U${p.age_min}+` : "—"}
                 </td>
                 <td className="px-5 py-4 text-brand-gray-600 text-xs">
                   {p.schedule_days?.join(", ") ?? "—"}
-                  {p.schedule_time_start && <span className="block text-brand-gray-400">{p.schedule_time_start.slice(0,5)}–{p.schedule_time_end?.slice(0,5)}</span>}
+                  {p.sessions_min && <span className="block text-brand-gray-400">{p.sessions_min}–{p.sessions_max ?? p.sessions_min} sessions/wk</span>}
                 </td>
                 <td className="px-5 py-4 font-bold text-brand-black">
                   ${p.price_cad}
@@ -158,19 +157,19 @@ export default function ProgramsClient({ initial }: { initial: Program[] }) {
             <div>
               <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Program Name *</label>
               <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                placeholder="e.g. U7–U9 Development"
+                placeholder="e.g. Elite Pathway"
                 className="w-full border border-brand-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-orange" />
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Min Age</label>
-                <input type="number" value={form.min_age ?? ""} onChange={e => setForm(f => ({ ...f, min_age: e.target.value ? Number(e.target.value) : null }))}
+                <input type="number" value={form.age_min ?? ""} onChange={e => setForm(f => ({ ...f, age_min: e.target.value ? Number(e.target.value) : null }))}
                   className="w-full border border-brand-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-orange" />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Max Age</label>
-                <input type="number" value={form.max_age ?? ""} onChange={e => setForm(f => ({ ...f, max_age: e.target.value ? Number(e.target.value) : null }))}
+                <input type="number" value={form.age_max ?? ""} onChange={e => setForm(f => ({ ...f, age_max: e.target.value ? Number(e.target.value) : null }))}
                   className="w-full border border-brand-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-orange" />
               </div>
               <div>
@@ -194,29 +193,15 @@ export default function ProgramsClient({ initial }: { initial: Program[] }) {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Start Time</label>
-                <input type="time" value={form.schedule_time_start} onChange={e => setForm(f => ({ ...f, schedule_time_start: e.target.value }))}
+                <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Sessions/wk (min)</label>
+                <input type="number" min="1" value={form.sessions_min ?? ""} onChange={e => setForm(f => ({ ...f, sessions_min: e.target.value ? Number(e.target.value) : null }))}
                   className="w-full border border-brand-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-orange" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">End Time</label>
-                <input type="time" value={form.schedule_time_end} onChange={e => setForm(f => ({ ...f, schedule_time_end: e.target.value }))}
+                <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Sessions/wk (max)</label>
+                <input type="number" min="1" value={form.sessions_max ?? ""} onChange={e => setForm(f => ({ ...f, sessions_max: e.target.value ? Number(e.target.value) : null }))}
                   className="w-full border border-brand-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-orange" />
               </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Location</label>
-              <input type="text" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
-                placeholder="e.g. Calgary Soccer Centre"
-                className="w-full border border-brand-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-orange" />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-brand-gray-600 uppercase tracking-wide mb-1.5">Description</label>
-              <textarea rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                placeholder="Short description shown on the website…"
-                className="w-full border border-brand-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-orange resize-none" />
             </div>
 
             <div className="flex items-center gap-3">

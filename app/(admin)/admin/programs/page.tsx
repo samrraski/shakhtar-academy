@@ -5,7 +5,7 @@ export default async function AdminProgramsPage() {
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("programs")
-    .select("id,name,description,min_age,max_age,price_cad,gst_rate,schedule_days,schedule_time_start,schedule_time_end,location,is_active")
+    .select("id,name,age_min,age_max,price_cad,gst_rate,schedule_days,sessions_min,sessions_max,is_active")
     .order("price_cad", { ascending: true });
 
   return (
