@@ -14,9 +14,9 @@ const VALUE_PROPS = [
 ];
 
 const PROGRAMS_PREVIEW = [
-  { age: "U6 – U8",   name: "Mini Strikers",       desc: "First touches, fun-first games, and a love for the ball." },
-  { age: "U9 – U12",  name: "Development Squad",   desc: "Building technical foundations and team play." },
-  { age: "U13 – U16", name: "Elite Pathway",       desc: "Competitive training for serious, driven players." },
+  { age: "U5 – U6",   name: "Mini Strikers",       desc: "First touches, fun-first games, and a love for the ball." },
+  { age: "U7 – U9",  name: "Development Squad",   desc: "Building technical foundations and team play." },
+  { age: "10 – U13", name: "Elite Pathway",       desc: "Competitive training for serious, driven players." },
   { age: "U17+",      name: "Pre-Academy",         desc: "Preparing top players for the next level." },
 ];
 
@@ -46,7 +46,7 @@ export default function HomePage() {
             The Shakhtar way of player development, in Calgary
           </h1>
           <p className="mt-5 text-base sm:text-lg text-brand-gray-200 max-w-2xl leading-relaxed">
-            {`Calgary's home for elite youth soccer development. Structured programs for ages 6–18, led by licensed coaches who care about every player's growth — on and off the pitch.`}
+            {`Calgary's home for elite youth soccer development. Structured programs for ages U5-U13, led by licensed coaches who care about every player's growth — on and off the pitch.`}
           </p>
           <div className="mt-9 flex flex-col sm:flex-row gap-3">
             <Link href="/programs"
